@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pi-webui</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/vendor/hljs/one-dark.min.css" />
+    <script src="/vendor/marked.min.js"></script>
+    <script src="/vendor/hljs/highlight.min.js"></script>
+    <script src="/vendor/hljs/languages/python.min.js"></script>
+    <script src="/vendor/hljs/languages/javascript.min.js"></script>
+    <script src="/vendor/hljs/languages/typescript.min.js"></script>
+    <script src="/vendor/hljs/languages/bash.min.js"></script>
+    <script src="/vendor/hljs/languages/json.min.js"></script>
+    <script src="/vendor/hljs/languages/css.min.js"></script>
+    <script src="/vendor/hljs/languages/xml.min.js"></script>
+    <script src="/vendor/hljs/languages/markdown.min.js"></script>
+    <script src="/vendor/hljs/languages/rust.min.js"></script>
+    <script src="/vendor/hljs/languages/go.min.js"></script>
+    <script src="/vendor/hljs/languages/ruby.min.js"></script>
+    <script src="/vendor/hljs/languages/java.min.js"></script>
+    <script src="/vendor/hljs/languages/c.min.js"></script>
+    <script src="/vendor/hljs/languages/cpp.min.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <main class="main">
+        <section id="log" class="log"></section>
+
+        <div class="composer-wrapper">
+          <div id="slash-menu" class="slash-menu" hidden></div>
+          <form id="composer" class="composer">
+            <textarea id="input" rows="1" autofocus></textarea>
+            <button id="send" type="submit" class="icon-button" aria-label="Send">
+              <svg class="icon-send" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg>
+              <svg class="icon-stop" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+            </button>
+          </form>
+          <div id="statusbar" class="statusbar">
+            <div class="statusbar-row">
+              <span id="status-cwd" class="status-cwd"></span>
+              <span id="status-error" class="status-error"></span>
+            </div>
+            <div class="statusbar-row">
+              <span id="status-left" class="status-left"></span>
+              <span id="status-right" class="status-right"></span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div id="modal" class="modal-backdrop" hidden>
+      <div class="modal">
+        <div class="modal-header">
+          <input id="modal-search" class="modal-search" type="text" autocomplete="off" />
+          <span id="modal-title" class="modal-title"></span>
+        </div>
+        <div id="modal-body" class="modal-body"></div>
+      </div>
+    </div>
+    <div id="toast-layer" class="toast-layer"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

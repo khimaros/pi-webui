@@ -1,0 +1,40 @@
+{
+  "name": "@khimaros/pi-webui",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Native web app for pi backed by the Pi SDK runtime and existing Pi sessions",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khimaros/pi-webui.git"
+  },
+  "homepage": "https://github.com/khimaros/pi-webui#readme",
+  "bugs": {
+    "url": "https://github.com/khimaros/pi-webui/issues"
+  },
+  "main": "server.mjs",
+  "bin": {
+    "pi-webui": "server.mjs"
+  },
+  "files": [
+    "server.mjs",
+    "server-event-log.mjs",
+    "server-log.mjs",
+    "server-watch.mjs",
+    "public",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "node --watch server.mjs",
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@mariozechner/pi-coding-agent": "^0.70.2",
+    "ws": "^8.18.3"
+  }
+}
