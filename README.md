@@ -11,26 +11,27 @@ prerequisites:
 - a working pi install with config/auth on this machine
   (`~/.pi/agent` by default)
 
-install and run:
+run without installing (latest published is `@khimaros/pi-webui` v0.2.0):
 
 ```bash
-npm install
-npm start
+npx @khimaros/pi-webui
 ```
 
-then open <http://127.0.0.1:8787>.
-
-for development with auto-reload:
-
-```bash
-npm run dev
-```
-
-### install from npm
+or install globally:
 
 ```bash
 npm install -g @khimaros/pi-webui
 pi-webui
+```
+
+then open <http://127.0.0.1:8787>.
+
+### from a source checkout
+
+```bash
+make            # install deps via npm install
+make start      # run the server (npm start)
+make start-dev  # run with auto-reload (npm run dev)
 ```
 
 ## configuration
@@ -73,6 +74,10 @@ see [ROADMAP.md](ROADMAP.md) for implemented and planned features.
 
 ```bash
 make            # install deps
+make start      # run the server
+make start-dev  # run with auto-reload
+make install    # install pi-webui globally from this checkout
+make update     # update dependencies (npm update)
 make test       # run tests
 make lint       # syntax-check sources
 make precommit  # lint + test

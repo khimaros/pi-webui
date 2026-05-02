@@ -484,6 +484,7 @@ class NativePiSessionController {
       payload: {
         appCwd,
         agentDir,
+        homeDir: process.env.HOME || "",
         diagnostics: this.runtime.diagnostics,
         slashCommands: this.collectSlashCommands(),
       },

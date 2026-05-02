@@ -40,6 +40,7 @@ let socket;
 let currentSessionState = null;
 const chatState = createChatState();
 let slashCommands = [];
+let homeDir = "";
 let slashFiltered = [];
 let slashIndex = 0;
 // Cursor into the server's session-event log. The server tags each
@@ -125,6 +126,31 @@ function escapeHtml(text) {
     .replaceAll(">", "&gt;");
 }
 
+function displayPath(path) {
+  if (!path || !homeDir) return path;
+  if (path === homeDir) return "~/";
+  if (path.startsWith(homeDir + "/")) return "~/" + path.slice(homeDir.length + 1);
+  return path;
+}
+
+// Replace every occurrence of $HOME in a string with `~/`. Used to prettify
+// absolute paths shown in tool-call inputs and tool-result bodies.
+function prettifyHomePaths(text) {
+  if (!text || !homeDir) return text;
+  return String(text).split(homeDir + "/").join("~/").split(homeDir).join("~");
+}
+
+function prettifyHomePathsDeep(value) {
+  if (typeof value === "string") return prettifyHomePaths(value);
+  if (Array.isArray(value)) return value.map(prettifyHomePathsDeep);
+  if (value && typeof value === "object") {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) out[k] = prettifyHomePathsDeep(v);
+    return out;
+  }
+  return value;
+}
+
 function renderMarkdown(text) {
   if (typeof marked === "undefined") return escapeHtml(text);
   try {
@@ -166,7 +192,7 @@ function renderThinkingBlockHtml(text) {
 }
 
 function renderToolCallBlockHtml(name, input) {
-  const json = JSON.stringify(input ?? {}, null, 2);
+  const json = JSON.stringify(prettifyHomePathsDeep(input ?? {}), null, 2);
   return `<details class="tool-block" open><summary class="tool-label">${escapeHtml(name)}</summary><pre><code class="language-json">${escapeHtml(json)}</code></pre></details>`;
 }
 
@@ -217,12 +243,12 @@ function renderToolResultBlockHtml(name, result) {
   // offer a toggle between the text output and the diff view.
   const { text: rawText, details } = extractResultParts(result);
   const isEdit = name === "edit";
-  const diff = isEdit && details && details.diff ? details.diff : null;
+  const diff = isEdit && details && details.diff ? prettifyHomePaths(details.diff) : null;
 
   const text = isEdit
-    ? rawText
+    ? prettifyHomePaths(rawText)
     : rawText !== null
-      ? (name === "Read" ? stripCatNLinePrefixes(rawText) : rawText)
+      ? prettifyHomePaths(name === "Read" ? stripCatNLinePrefixes(rawText) : rawText)
       : null;
 
   let toggleBtns = "";
@@ -241,9 +267,9 @@ function renderToolResultBlockHtml(name, result) {
     if (text) {
       contentHtml = `<code>${escapeHtml(text)}</code>`;
     } else if (typeof result === "string") {
-      contentHtml = `<code>${escapeHtml(result)}</code>`;
+      contentHtml = `<code>${escapeHtml(prettifyHomePaths(result))}</code>`;
     } else {
-      contentHtml = `<code class="language-json">${escapeHtml(JSON.stringify(result, null, 2))}</code>`;
+      contentHtml = `<code class="language-json">${escapeHtml(JSON.stringify(prettifyHomePathsDeep(result), null, 2))}</code>`;
     }
     dataAttrs = ` data-view="single" data-has-diff="0"`;
   }
@@ -567,6 +593,7 @@ function connect() {
     switch (packet.type) {
       case "connected":
         slashCommands = packet.payload.slashCommands || [];
+        homeDir = packet.payload.homeDir || "";
         logger.info("connected", {
           appCwd: packet.payload.appCwd,
           agentDir: packet.payload.agentDir,
@@ -878,7 +905,7 @@ function renderStatusBar() {
     statusCwd.textContent = "";
     return;
   }
-  statusCwd.textContent = s.cwd || "";
+  statusCwd.textContent = displayPath(s.cwd || "");
   const ctx = s.contextUsage;
   const pct = ctx?.percent ?? 0;
   const window = ctx?.contextWindow || s.model?.contextWindow || 0;
