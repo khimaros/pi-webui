@@ -1,6 +1,6 @@
 {
   "name": "@khimaros/pi-webui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "description": "Native web app for pi backed by the Pi SDK runtime and existing Pi sessions",
   "license": "GPL-3.0-or-later",
