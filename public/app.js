@@ -23,6 +23,7 @@ import {
   selectItems as csSelectItems,
 } from "./chat-state.mjs";
 import { dispatchSessionEvent } from "./session-dispatch.mjs";
+import { createModalController } from "./modal-controller.mjs";
 import { decideExtraItemRender } from "./render-decision.mjs";
 import {
   extractTextFromResult,
@@ -135,10 +136,10 @@ let modalOnSelect = null;
 let modalOnCommit = null;
 let modalMulti = false;
 let modalSelected = new Set();
-// Fires from closeModal() when the modal is dismissed without committing
-// (e.g. Escape, backdrop click). Used by the extension UI bridge to send
-// a cancellation back to the server.
-let modalOnClose = null;
+// Owns the cancel handler used by the ext_ui bridge to reply on dismissal
+// (Escape, backdrop click). closeModal() routes through dismiss(); commit
+// paths call modalCtrl.commit() to suppress the cancel before teardown.
+const modalCtrl = createModalController();
 // Hooks used by dynamic pickers (currently the cwd picker) to take over
 // the modal search input/Enter/Tab without rewriting the modal infra.
 let modalInputOverride = null;
@@ -764,8 +765,6 @@ function openModal(items, opts = {}) {
 }
 
 function closeModal() {
-  const onClose = modalOnClose;
-  modalOnClose = null;
   modal.hidden = true;
   modalDialog.classList.remove("text-mode");
   modalDialog.classList.remove("prompt-mode");
@@ -782,7 +781,7 @@ function closeModal() {
   modalTabHandler = null;
   cwdPickerState = null;
   input.focus();
-  onClose?.();
+  modalCtrl.dismiss();
 }
 
 function filterModal() {
@@ -851,6 +850,7 @@ function commitModal() {
   if (modalMulti) {
     const cb = modalOnCommit;
     const selected = [...modalSelected];
+    modalCtrl.commit();
     closeModal();
     cb?.(selected);
     return;
@@ -858,6 +858,7 @@ function commitModal() {
   const item = modalFiltered[modalIndex];
   if (!item) return;
   const cb = modalOnSelect;
+  modalCtrl.commit();
   closeModal();
   cb?.(item);
 }
@@ -1128,14 +1129,14 @@ function handleExtUiRequest(payload) {
   // If the modal closes for any reason without a commit (Escape, click-out),
   // resolve the request as cancelled with the kind-appropriate "no answer".
   const cancelValue = payload.kind === "confirm" ? false : undefined;
-  modalOnClose = () => reply(cancelValue);
+  modalCtrl.setOnCancel(() => reply(cancelValue));
   activeExtUiRequestId = id;
 
   switch (payload.kind) {
     case "notify":
       showToast(payload.message || "", payload.type || "info");
       reply(undefined);
-      modalOnClose = null;
+      modalCtrl.setOnCancel(null);
       activeExtUiRequestId = null;
       return;
     case "confirm":

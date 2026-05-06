@@ -1,8 +1,8 @@
 {
   "name": "@khimaros/pi-webui",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "type": "module",
-  "description": "Native web app for pi backed by the Pi SDK runtime and existing Pi sessions",
+  "description": "a simple, standalone webui for pi.dev",
   "keywords": [
     "pi-package"
   ],
@@ -40,5 +40,8 @@
   "dependencies": {
     "@mariozechner/pi-coding-agent": "^0.70.2",
     "ws": "^8.18.3"
+  },
+  "pi": {
+    "extensions": ["./extensions"]
   }
 }

@@ -1,7 +1,6 @@
 # pi-webui
 
-a native web app for [pi](https://pi.dev), backed by the pi sdk runtime
-and your existing persisted pi sessions.
+a simple, standalone webui for [pi.dev](https://pi.dev)
 
 ![screencast](docs/screencast.gif)
 
@@ -10,8 +9,22 @@ and your existing persisted pi sessions.
 prerequisites:
 
 - node.js 20+
-- a working pi install with config/auth on this machine
-  (`~/.pi/agent` by default)
+- a working pi installation
+
+install as a pi extension:
+
+```bash
+pi install npm:@khimaros/pi-webui
+```
+
+control from the pi tui:
+
+```bash
+> /webui start    # start the server
+> /webui status   # view server status
+> /webui open     # open webui in browser
+> /webui stop     # stop the server
+```
 
 run without installing:
 
