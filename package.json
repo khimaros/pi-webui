@@ -1,6 +1,6 @@
 {
   "name": "@khimaros/pi-webui",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "type": "module",
   "description": "a simple, standalone webui for pi.dev",
   "keywords": [
@@ -30,8 +30,12 @@
   ],
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('dist/server/index.js', 0o755)\"",
+    "prepack": "npm run build",
     "start": "node dist/server/index.js",
     "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "engines": {
     "node": ">=20"
